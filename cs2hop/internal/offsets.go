@@ -13,26 +13,23 @@ type Offsets struct {
 	} `json:"client_dll"`
 }
 
-func GetOffsets() (*Offsets, error) {
-	var offsets Offsets
-
+func (o *Offsets) FetchOffsets() error {
 	// TODO: Download offsets from github.com/a2x/cs2-dumper
 
 	resp, err := http.Get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/generated/offsets.json")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 
 	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	err = json.Unmarshal(bytes, &offsets)
+	err = json.Unmarshal(bytes, &o)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	return &offsets, nil
+	return nil
 }
