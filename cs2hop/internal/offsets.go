@@ -8,8 +8,9 @@ import (
 
 type Offsets struct {
 	ClientDll struct {
-		DwForceJump   float64 `json:"dwForceJump"`
-		DwLocalPlayer float64 `json:"dwLocalPlayerController"`
+		DwLocalPlayerController float64 `json:"dwLocalPlayerController"`
+		DwLocalPlayerPawn       float64 `json:"dwLocalPlayerPawn"`
+		DwPlantedC4             float64 `json:"dwPlantedC4"`
 	} `json:"client_dll"`
 }
 
