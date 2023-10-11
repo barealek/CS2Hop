@@ -1,6 +1,11 @@
 package cs2hop
 
-import "github.com/jamesmoriarty/gomem"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/jamesmoriarty/gomem"
+)
 
 type Client struct {
 	Process *gomem.Process
@@ -8,8 +13,7 @@ type Client struct {
 	Offsets *Offsets
 }
 
-// Needs work
-func GetClientFrom(process *gomem.Process, offsets *Offsets) (*Client, error) {
+func GetClientFromProcess(process *gomem.Process, offsets *Offsets) (*Client, error) {
 	address, err := process.GetModule("client.dll")
 	if err != nil {
 		return nil, err
@@ -20,12 +24,21 @@ func GetClientFrom(process *gomem.Process, offsets *Offsets) (*Client, error) {
 }
 
 func (c *Client) GetLocalPlayer() (uintptr, error) {
-	ptr, _ := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwLocalPlayer))
+	ptr, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwLocalPlayerPawn))
+	if err != nil {
+		return 0, errors.New("failed to read localplayer: " + err.Error())
+	}
 	return (uintptr)(ptr), nil
-
 }
 
-func (c *Client) ForceJump() error {
-	ptr, _ := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwForceJump))
-	return c.Process.WriteByte(uintptr(ptr), 0x6)
+func (c *Client) PlayerIsInAir() (bool, error) {
+	pawn, err := c.GetLocalPlayer()
+	if err != nil {
+		return false, err
+	}
+	fmt.Println("Pawn address: ", pawn)
+
+	// ...
+
+	return false, nil
 }
