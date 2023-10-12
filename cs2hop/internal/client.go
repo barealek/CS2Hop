@@ -32,7 +32,7 @@ func GetClientFromProcessName(processName string, offsets *Offsets) (*Client, er
 
 func (c *Client) GetLocalPlayer() (uintptr, error) {
 
-	ptr, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwLocalPlayerPawn))
+	ptr, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwLocalPlayerController))
 	if err != nil {
 		return 0, errors.New("failed to read localplayer: " + err.Error())
 	}
@@ -47,7 +47,6 @@ func (c *Client) PlayerIsInAir() (bool, error) {
 
 	flags, err := c.Process.ReadByte(lp + uintptr(968))
 	if err != nil {
-		fmt.Println("FEjl")
 		return false, err
 	}
 	fmt.Println("Flags: ", flags)
@@ -55,14 +54,18 @@ func (c *Client) PlayerIsInAir() (bool, error) {
 	return false, nil
 }
 
-func (c *Client) ForceJump() error {
-	lp, err := c.GetLocalPlayer()
+func (c *Client) GetFlags() error {
+	_, err := c.GetLocalPlayer()
 	if err != nil {
 		return err
 	}
 
-	flags, err := c.Process.ReadByte(lp + uintptr(c.Offsets.ClientDll.DwForceJump))
-	fmt.Println("Flags: ", flags)
+	fFlags, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwLocalPlayerPawn))
+
 	// ...
+	fmt.Println("Flags: ", fFlags)
+	state := fFlags&(FL_ONGROUND) != 0
+	fmt.Println(state)
+
 	return err
 }
