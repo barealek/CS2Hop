@@ -23,6 +23,9 @@ func main() {
 	}
 
 	time.Sleep(3000)
-	fmt.Println(client.ForceJump())
+	for {
+		fmt.Println(client.GetFlags())
+		time.Sleep(5 * time.Second)
+	}
 
 }
