@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	cs2hop "github.com/barealek/cs2hop/internal"
-	"github.com/jamesmoriarty/gomem"
 )
 
 var (
@@ -17,18 +17,12 @@ func main() {
 		panic(err)
 	}
 
-	process, err := gomem.GetProcessFromName("cs2.exe")
+	client, err := cs2hop.GetClientFromProcessName("cs2.exe", &offsets)
 	if err != nil {
 		panic(err)
 	}
 
-	client, err := cs2hop.GetClientFrom(process, &offsets)
-	if err != nil {
-		panic(err)
-	}
+	time.Sleep(3000)
+	fmt.Println(client.ForceJump())
 
-	if err = client.ForceJump(); err != nil {
-		fmt.Println("ERROR:")
-		fmt.Println(err)
-	}
 }
