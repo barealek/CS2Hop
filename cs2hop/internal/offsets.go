@@ -12,6 +12,7 @@ type Offsets struct {
 		DwLocalPlayerPawn       float64 `json:"dwLocalPlayerPawn"`
 		DwPlantedC4             float64 `json:"dwPlantedC4"`
 		DwForceJump             float64 `json:"dwForceJump"`
+		DwEntityList            float64 `json:"dwEntityList"`
 	} `json:"client_dll"`
 }
 
