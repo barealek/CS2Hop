@@ -24,7 +24,7 @@ func main() {
 
 	for {
 		time.Sleep(1000 * time.Millisecond)
-		fmt.Println(client.ForceJump())
+		fmt.Println("ForceJump Error:", client.ForceJump())
 	}
 
 }
