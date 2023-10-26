@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
 	cs2hop "github.com/barealek/cs2hop/internal"
 )
 
@@ -23,8 +20,13 @@ func main() {
 	}
 
 	for {
-		time.Sleep(1000 * time.Millisecond)
-		fmt.Println("ForceJump Error:", client.ForceJump())
+		flags, err := client.GetFlags()
+		if err != nil {
+			panic(err)
+		}
+		onGround := flags&(cs2hop.FL_ONGROUND) != 0
+		if onGround {
+			client.ForceJump()
+		}
 	}
-
 }
