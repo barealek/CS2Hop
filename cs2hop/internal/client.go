@@ -3,8 +3,17 @@ package cs2hop
 import (
 	"errors"
 	"fmt"
+	"syscall"
+	"unsafe"
 
 	"github.com/jamesmoriarty/gomem"
+)
+
+var (
+	kernel32               = syscall.NewLazyDLL("kernel32.dll")
+	procOpenProcess        = kernel32.NewProc("OpenProcess")
+	procReadProcessMemory  = kernel32.NewProc("ReadProcessMemory")
+	procWriteProcessMemory = kernel32.NewProc("WriteProcessMemory")
 )
 
 type Client struct {
@@ -26,41 +35,20 @@ func GetClientFromProcessName(processName string, offsets *Offsets) (*Client, er
 		return nil, err
 	}
 
-	client := &Client{Process: process, Address: address, Offsets: offsets}
-	return client, nil
+	return &Client{Process: process, Address: address, Offsets: offsets}, nil
 }
 
 func (c *Client) GetLocalPlayer() (uintptr, error) {
 
-	ptr, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwLocalPlayerController))
+	ptr, err := c.Process.ReadUInt32(c.Address + 25063768)
 	if err != nil {
 		return 0, errors.New("failed to read localplayer: " + err.Error())
 	}
 	return (uintptr)(ptr), nil
 }
 
-func (c *Client) PlayerIsInAir() (bool, error) {
-	lp, err := c.GetLocalPlayer()
-	if err != nil {
-		return false, err
-	}
-
-	flags, err := c.Process.ReadByte(lp + uintptr(968))
-	if err != nil {
-		return false, err
-	}
-	fmt.Println("Flags: ", flags)
-
-	return false, nil
-}
-
 func (c *Client) GetFlags() error {
-	_, err := c.GetLocalPlayer()
-	if err != nil {
-		return err
-	}
-
-	fFlags, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.ClientDll.DwLocalPlayerPawn))
+	fFlags, err := c.Process.ReadUInt32(c.Address + 25713704)
 
 	// ...
 	fmt.Println("Flags: ", fFlags)
@@ -68,4 +56,20 @@ func (c *Client) GetFlags() error {
 	fmt.Println(state)
 
 	return err
+}
+
+func (c *Client) ForceJump() error {
+	processHandle := c.Process.Handle
+
+	client := uintptr(c.Address)
+	var bytesRead uintptr
+	var buffer [4]byte
+	procReadProcessMemory.Call(processHandle, client+uintptr(25713704), uintptr(unsafe.Pointer(&buffer[0])), uintptr(unsafe.Sizeof(buffer)), uintptr(unsafe.Pointer(&bytesRead)))
+
+	player := *(*uint32)(unsafe.Pointer(&buffer[0]))
+	forceJump := client + uintptr(23716704)
+	var bytesWritten uintptr
+	procWriteProcessMemory.Call(processHandle, forceJump, uintptr(unsafe.Pointer(&player)), uintptr(unsafe.Sizeof(player)), uintptr(unsafe.Pointer(&bytesWritten)))
+
+	return nil
 }
