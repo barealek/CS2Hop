@@ -2,18 +2,27 @@ package cs2hop
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
 
 type Offsets struct {
+	DwLocalPlayerController offset `json:"dwLocalPlayerController"`
+	DwLocalPlayerPawn       offset `json:"dwLocalPlayerPawn"`
+	DwForceJump             offset `json:"dwForceJump"`
+}
+
+type offsetsWrapper struct {
 	ClientDll struct {
-		DwLocalPlayerController float64 `json:"dwLocalPlayerController"`
-		DwLocalPlayerPawn       float64 `json:"dwLocalPlayerPawn"`
-		DwPlantedC4             float64 `json:"dwPlantedC4"`
-		DwForceJump             float64 `json:"dwForceJump"`
-		DwEntityList            float64 `json:"dwEntityList"`
+		Data map[string]struct {
+			Value uint32 `json:"value"`
+		} `json:"data"`
 	} `json:"client_dll"`
+}
+
+type offset struct {
+	Value float64 `json:"value"`
 }
 
 func (o *Offsets) FetchOffsets() error {
@@ -30,9 +39,18 @@ func (o *Offsets) FetchOffsets() error {
 		return err
 	}
 
-	err = json.Unmarshal(bytes, &o)
+	var wrapper offsetsWrapper
+	var wrapperBytes []byte
+
+	err = json.Unmarshal(bytes, &wrapper)
+	wrapperBytes, err = json.Marshal(wrapper.ClientDll.Data)
+	err = json.Unmarshal(wrapperBytes, o)
+
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(*o)
+
 	return nil
 }
