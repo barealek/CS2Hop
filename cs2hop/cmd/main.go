@@ -1,11 +1,15 @@
 package main
 
 import (
+	"time"
+
 	cs2hop "github.com/barealek/cs2hop/internal"
+	"github.com/jamesmoriarty/gomem"
 )
 
 var (
-	offsets = cs2hop.Offsets{}
+	offsets  = cs2hop.Offsets{}
+	VK_SPACE = 0x20
 )
 
 func main() {
@@ -20,13 +24,19 @@ func main() {
 	}
 
 	for {
-		flags, err := client.GetFlags()
-		if err != nil {
-			panic(err)
+		if gomem.IsKeyDown(VK_SPACE) {
+			flags, err := client.GetFlags()
+			if err != nil {
+				panic(err)
+			}
+
+			onGround := flags&(cs2hop.FL_ONGROUND) != 0
+
+			if onGround {
+				client.ForceJump()
+			}
+
 		}
-		onGround := flags&(cs2hop.FL_ONGROUND) != 0
-		if onGround {
-			client.ForceJump()
-		}
+		time.Sleep(1 * time.Millisecond)
 	}
 }
