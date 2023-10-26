@@ -3,6 +3,7 @@ package cs2hop
 import (
 	"errors"
 	"syscall"
+	"time"
 	"unsafe"
 
 	"github.com/jamesmoriarty/gomem"
@@ -46,15 +47,22 @@ func (c *Client) GetLocalPlayerController() (uintptr, error) {
 	return (uintptr)(ptr), nil
 }
 
-func (c *Client) GetFlags() error {
-	// fFlags, err := c.Process.ReadUInt32(c.Address + 25713704)
+func (c *Client) GetLocalPlayerPawn() (uintptr, error) {
 
-	// // ...
-	// fmt.Println("Flags: ", fFlags)
-	// state := fFlags&(FL_ONGROUND) != 0
-	// fmt.Println(state)
+	ptr, err := c.Process.ReadUInt64(c.Address + uintptr(c.Offsets.DwLocalPlayerPawn.Value))
+	if err != nil {
+		return 0, errors.New("failed to read localplayer: " + err.Error())
+	}
+	return (uintptr)(ptr), nil
+}
 
-	return nil
+func (c *Client) GetFlags() (uint32, error) {
+	lpPawn, _ := c.GetLocalPlayerPawn()
+	fFlags, err := c.Process.ReadUInt32(lpPawn + uintptr(968))
+	if err != nil {
+		return 0, err
+	}
+	return fFlags, nil
 }
 
 func (c *Client) ForceJump() error {
@@ -65,10 +73,17 @@ func (c *Client) ForceJump() error {
 	var buffer [4]byte
 	procReadProcessMemory.Call(processHandle, client+uintptr(c.Offsets.DwLocalPlayerPawn.Value), uintptr(unsafe.Pointer(&buffer[0])), uintptr(unsafe.Sizeof(buffer)), uintptr(unsafe.Pointer(&bytesRead)))
 
-	player := *(*uint32)(unsafe.Pointer(&buffer[0]))
+	player, _ := c.GetLocalPlayerController()
 	forceJump := client + uintptr(c.Offsets.DwForceJump.Value)
 	var bytesWritten uintptr
 	procWriteProcessMemory.Call(processHandle, forceJump, uintptr(unsafe.Pointer(&player)), uintptr(unsafe.Sizeof(player)), uintptr(unsafe.Pointer(&bytesWritten)))
+
+	time.Sleep(3 * time.Millisecond)
+
+	newForceJumpValue := uint32(256)
+	procWriteProcessMemory.Call(processHandle, forceJump, uintptr(unsafe.Pointer(&newForceJumpValue)), uintptr(unsafe.Sizeof(newForceJumpValue)), uintptr(unsafe.Pointer(&bytesWritten)))
+
+	time.Sleep(3 * time.Millisecond)
 
 	return nil
 }
