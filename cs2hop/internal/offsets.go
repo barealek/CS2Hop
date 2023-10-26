@@ -2,7 +2,6 @@ package cs2hop
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -49,8 +48,6 @@ func (o *Offsets) FetchOffsets() error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(*o)
 
 	return nil
 }
