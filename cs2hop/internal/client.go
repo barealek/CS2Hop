@@ -2,7 +2,6 @@ package cs2hop
 
 import (
 	"errors"
-	"fmt"
 	"syscall"
 	"unsafe"
 
@@ -38,9 +37,9 @@ func GetClientFromProcessName(processName string, offsets *Offsets) (*Client, er
 	return &Client{Process: process, Address: address, Offsets: offsets}, nil
 }
 
-func (c *Client) GetLocalPlayer() (uintptr, error) {
+func (c *Client) GetLocalPlayerController() (uintptr, error) {
 
-	ptr, err := c.Process.ReadUInt32(c.Address + 25063768)
+	ptr, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.dwLocalPlayerController.Value))
 	if err != nil {
 		return 0, errors.New("failed to read localplayer: " + err.Error())
 	}
