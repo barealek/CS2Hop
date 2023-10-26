@@ -48,14 +48,14 @@ func (c *Client) GetLocalPlayer() (uintptr, error) {
 }
 
 func (c *Client) GetFlags() error {
-	fFlags, err := c.Process.ReadUInt32(c.Address + 25713704)
+	// fFlags, err := c.Process.ReadUInt32(c.Address + 25713704)
 
-	// ...
-	fmt.Println("Flags: ", fFlags)
-	state := fFlags&(FL_ONGROUND) != 0
-	fmt.Println(state)
+	// // ...
+	// fmt.Println("Flags: ", fFlags)
+	// state := fFlags&(FL_ONGROUND) != 0
+	// fmt.Println(state)
 
-	return err
+	return nil
 }
 
 func (c *Client) ForceJump() error {
