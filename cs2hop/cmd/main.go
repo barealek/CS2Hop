@@ -22,10 +22,9 @@ func main() {
 		panic(err)
 	}
 
-	time.Sleep(3000)
 	for {
-		fmt.Println(client.GetFlags())
-		time.Sleep(5 * time.Second)
+		time.Sleep(1000 * time.Millisecond)
+		fmt.Println(client.ForceJump())
 	}
 
 }
