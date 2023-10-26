@@ -39,7 +39,7 @@ func GetClientFromProcessName(processName string, offsets *Offsets) (*Client, er
 
 func (c *Client) GetLocalPlayerController() (uintptr, error) {
 
-	ptr, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.dwLocalPlayerController.Value))
+	ptr, err := c.Process.ReadUInt32(c.Address + uintptr(c.Offsets.DwLocalPlayerController.Value))
 	if err != nil {
 		return 0, errors.New("failed to read localplayer: " + err.Error())
 	}
