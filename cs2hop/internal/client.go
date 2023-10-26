@@ -78,12 +78,10 @@ func (c *Client) ForceJump() error {
 	var bytesWritten uintptr
 	procWriteProcessMemory.Call(processHandle, forceJump, uintptr(unsafe.Pointer(&player)), uintptr(unsafe.Sizeof(player)), uintptr(unsafe.Pointer(&bytesWritten)))
 
-	time.Sleep(3 * time.Millisecond)
+	time.Sleep(4 * time.Millisecond)
 
+	// Write 256 to forceJump to make the next jump possible
 	newForceJumpValue := uint32(256)
 	procWriteProcessMemory.Call(processHandle, forceJump, uintptr(unsafe.Pointer(&newForceJumpValue)), uintptr(unsafe.Sizeof(newForceJumpValue)), uintptr(unsafe.Pointer(&bytesWritten)))
-
-	time.Sleep(3 * time.Millisecond)
-
 	return nil
 }
