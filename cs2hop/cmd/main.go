@@ -13,16 +13,19 @@ var (
 )
 
 func main() {
+    fmt.Println("Fetching Offsets...")
 	err := offsets.FetchOffsets()
 	if err != nil {
 		panic(err)
 	}
 
+    fmt.Println("Getting client...")
 	client, err := cs2hop.GetClientFromProcessName("cs2.exe", &offsets)
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Println("Success. Client is ready.")
 	for {
 		if gomem.IsKeyDown(VK_SPACE) {
 			flags, err := client.GetFlags()
