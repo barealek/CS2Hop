@@ -2,6 +2,7 @@ package main
 
 import (
 	"time"
+	"fmt"
 
 	cs2hop "github.com/barealek/cs2hop/internal"
 	"github.com/jamesmoriarty/gomem"
