@@ -69,12 +69,10 @@ func (c *Client) ForceJump() error {
 	processHandle := c.Process.Handle
 
 	client := uintptr(c.Address)
-	var bytesRead uintptr
-	var buffer [4]byte
-	procReadProcessMemory.Call(processHandle, client+uintptr(c.Offsets.DwLocalPlayerPawn.Value), uintptr(unsafe.Pointer(&buffer[0])), uintptr(unsafe.Sizeof(buffer)), uintptr(unsafe.Pointer(&bytesRead)))
 
 	player, _ := c.GetLocalPlayerController()
 	forceJump := client + uintptr(c.Offsets.DwForceJump.Value)
+
 	var bytesWritten uintptr
 	procWriteProcessMemory.Call(processHandle, forceJump, uintptr(unsafe.Pointer(&player)), uintptr(unsafe.Sizeof(player)), uintptr(unsafe.Pointer(&bytesWritten)))
 
