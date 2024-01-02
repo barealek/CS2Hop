@@ -1,8 +1,8 @@
 package main
 
 import (
-	"time"
 	"fmt"
+	"time"
 
 	cs2hop "github.com/barealek/cs2hop/internal"
 	"github.com/jamesmoriarty/gomem"
@@ -14,13 +14,13 @@ var (
 )
 
 func main() {
-    fmt.Println("Fetching Offsets...")
+	fmt.Println("Fetching Offsets...")
 	err := offsets.FetchOffsets()
 	if err != nil {
 		panic(err)
 	}
 
-    fmt.Println("Getting client...")
+	fmt.Println("Getting client...")
 	client, err := cs2hop.GetClientFromProcessName("cs2.exe", &offsets)
 	if err != nil {
 		panic(err)
@@ -40,7 +40,10 @@ func main() {
 				client.ForceJump()
 			}
 
+			time.Sleep(1 * time.Millisecond)
+		} else {
+
+			time.Sleep(20 * time.Millisecond)
 		}
-		time.Sleep(10 * time.Millisecond)
 	}
 }
