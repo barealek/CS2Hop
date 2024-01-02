@@ -40,7 +40,7 @@ func main() {
 				client.ForceJump()
 			}
 
-			time.Sleep(1 * time.Millisecond)
+			time.Sleep(500 * time.Microsecond)
 		} else {
 
 			time.Sleep(20 * time.Millisecond)
